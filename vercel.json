@@ -1,0 +1,13 @@
+{
+  "rewrites": [
+    { "source": "/auth/(.*)", "destination": "/api/index.js" },
+    { "source": "/users/(.*)", "destination": "/api/index.js" },
+    { "source": "/donors(.*)", "destination": "/api/index.js" },
+    { "source": "/me/(.*)", "destination": "/api/index.js" },
+    { "source": "/inventory(.*)", "destination": "/api/index.js" },
+    { "source": "/potential-donors", "destination": "/api/index.js" },
+    { "source": "/events(.*)", "destination": "/api/index.js" },
+    { "source": "/requests(.*)", "destination": "/api/index.js" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
