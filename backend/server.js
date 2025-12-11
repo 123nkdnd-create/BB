@@ -12,19 +12,28 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'x-auth-token', 'Authorization']
+}));
 app.use(express.json());
 
 const uri = process.env.ATLAS_URI;
-mongoose.connect(uri);
-const connection = mongoose.connection;
-connection.on('error', (err) => {
-    console.error("MongoDB connection error: ", err);
-    process.exit();
+if (!uri) {
+  console.error("ATLAS_URI environment variable is not defined");
+}
+
+// Mongoose connection with error handling that doesn't crash the process
+mongoose.connect(uri)
+  .then(() => console.log("MongoDB database connection established successfully"))
+  .catch(err => console.error("MongoDB connection error: ", err));
+
+// Health check route
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Backend is running' });
 });
-connection.once('open', () => {
-  console.log("MongoDB database connection established successfully");
-})
+
 
 // Donor / domain models
 const donorSchema = new mongoose.Schema({
@@ -284,8 +293,12 @@ app.get('/donors', async (req, res) => {
 
 // Ensure uploads directory exists and serve static files
 const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (err) {
+  console.log("Could not create uploads directory (expected in serverless environment):", err.message);
 }
 app.use('/uploads', express.static(uploadsDir));
 

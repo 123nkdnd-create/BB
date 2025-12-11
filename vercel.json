@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/api/health", "destination": "/api/index.js" },
     { "source": "/auth/(.*)", "destination": "/api/index.js" },
     { "source": "/users/(.*)", "destination": "/api/index.js" },
     { "source": "/donors(.*)", "destination": "/api/index.js" },
